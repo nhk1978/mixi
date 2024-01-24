@@ -6,12 +6,9 @@ import useAppSelector from "../hooks/useAppSelector";
 
 const Checkout = () => {
   const { totalAmount, shippingFee } = useAppSelector((state) => state.cart);
-<<<<<<< HEAD
-=======
   
   // const orderId = localStorage.getItem('orderId');
   // console.log("check out orderId: " + orderId);
->>>>>>> 16fe228 (re-strcuture)
   const includedDeliveryFeeAmount = totalAmount + shippingFee;
 
   return (
