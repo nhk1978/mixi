@@ -1,14 +1,19 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios, { AxiosError } from "axios";
-import { Order, OrderUpdate } from "../../types/Order";
+import { Order, OrderStatus, OrderUpdate } from "../../types/Order";
 
 const baseUrl = `${process.env.REACT_APP_PROXY}/api/v1/orders`;
 
-const initialState: {
+
+interface OrderReducer {
   orders: Order[];
+  currentOrder?: Order;
+  currentStatus?: OrderStatus;
   loading: boolean;
   error: string;
-} = {
+}
+
+const initialState: OrderReducer= {
   orders: [],
   loading: false,
   error: ""
@@ -42,6 +47,10 @@ export const createNewOrder = createAsyncThunk(
           Authorization: `Bearer ${token}`,
         }
       });
+      
+      localStorage.setItem('orderId', createOrderResponse.data.id);
+
+      console.log("createor orderId: " + createOrderResponse.data.id);
       return createOrderResponse.data;
     } catch (e) {
       const error = e as AxiosError;
@@ -54,9 +63,31 @@ export const updateConfirmOrder = createAsyncThunk(
   "updateConfirmOrder",
   async (updatedOrder: OrderUpdate) => {
     try {
+      const token = localStorage.getItem('token');
       const result = await axios.patch(
-        `${baseUrl}/${updatedOrder.id}/confirm`,
-        updatedOrder.update
+        `${baseUrl}/${updatedOrder.id}/order-confirmation`,
+        updatedOrder.update,{headers: {
+          Authorization: `Bearer ${token}`,
+        }}
+      );
+      return result.data;
+    } catch (e) {
+      const error = e as AxiosError;
+      return error;
+    }
+  }
+);
+
+export const updatePaymentOrder = createAsyncThunk(
+  "updatePaymentOrder",
+  async (updatedOrder: OrderUpdate) => {
+    try {
+      const token = localStorage.getItem('token');
+      const result = await axios.patch(
+        `${baseUrl}/${updatedOrder.id}/payment-process`,
+        updatedOrder.update,{headers: {
+          Authorization: `Bearer ${token}`,
+        }}
       );
       return result.data;
     } catch (e) {
@@ -108,6 +139,8 @@ const ordersSlice = createSlice({
           state.error = action.payload.message;
         } else {
           state.orders.push(action.payload);
+          state.currentOrder = action.payload;
+          state.currentStatus = OrderStatus.Pending;
         }
         state.loading = false;
       })
@@ -121,13 +154,14 @@ const ordersSlice = createSlice({
         if (action.payload instanceof AxiosError) {
           state.error = action.payload.message;
         } else {
-          const products = state.orders.map((Order) => {
-            if (Order.id === action.payload.id) {
-              return { ...Order, ...action.payload };
-            }
-            return Order;
-          });
-          state.orders = products;
+          // const orders = state.orders.map((Order) => {
+          //   if (Order.id === action.payload.id) {
+          //     return { ...Order, ...action.payload };
+          //   }
+          //   return Order;
+          // });
+          // state.orders = orders;
+          state.currentStatus = OrderStatus.AwaitingPayment;
         }
         state.loading = false;
       })
@@ -135,7 +169,30 @@ const ordersSlice = createSlice({
         state.loading = true;
       })
       .addCase(updateConfirmOrder.rejected, (state) => {
-        state.error = "Cannot update product";
+        state.error = "Cannot update order";
+      })
+      .addCase(updatePaymentOrder.fulfilled, (state, action) => {
+        if (action.payload instanceof AxiosError) {
+          state.error = action.payload.message;
+        } else {
+          // const orders = state.orders.map((Order) => {
+          //   if (Order.id === action.payload.id) {
+          //     return { ...Order, ...action.payload };
+          //   }
+          //   return Order;
+          // });
+          // state.orders = orders;
+          // state.currentOrder = action.payload;
+
+          state.currentStatus = OrderStatus.AwaitingFulfillment;
+        }
+        state.loading = false;
+      })
+      .addCase(updatePaymentOrder.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(updatePaymentOrder.rejected, (state) => {
+        state.error = "Cannot update order";
       })
       .addCase(deleteSingleOrder.fulfilled, (state, action) => {
         if (action.payload instanceof AxiosError) {
@@ -147,6 +204,8 @@ const ordersSlice = createSlice({
             (Order) => Order.id !== deletedOrderId
           );
         }
+
+        state.currentOrder = undefined;
         state.loading = false;
       })
       .addCase(deleteSingleOrder.pending, (state) => {

@@ -39,7 +39,13 @@ const cartSlice = createSlice({
 
       state.totalQuantity += 1;
       state.totalAmount += newItem.price;
-      localStorage.setItem("itemsInCart", JSON.stringify({items: state.items, totalItems: state.totalQuantity, totalValue: state.totalAmount}));
+      state.cartId = state.items[0].cartId;
+      localStorage.setItem("itemsInCart", JSON.stringify({
+        items: state.items, 
+        totalItems: state.totalQuantity, 
+        totalValue: state.totalAmount, 
+        cartId: state.items[0].cartId
+      }));
     },
     removeItemFromCart: (state, action: PayloadAction<string>) => {
       const cartItemId = action.payload;
@@ -48,8 +54,14 @@ const cartSlice = createSlice({
         const removedItem = state.items.splice(index, 1)[0];
         state.totalQuantity -= removedItem.quantity;
         state.totalAmount -= removedItem.amount;
+        state.cartId = state.items[0].cartId;
       }
-      localStorage.setItem("itemsInCart", JSON.stringify({items: state.items, totalItems: state.totalQuantity, totalValue: state.totalAmount}));
+      localStorage.setItem("itemsInCart", JSON.stringify({
+        items: state.items, 
+        totalItems: state.totalQuantity, 
+        totalValue: state.totalAmount,
+        cartId: cartItemId
+      }));
     },
     setItemQuantity: (
       state,
@@ -64,7 +76,12 @@ const cartSlice = createSlice({
         state.totalQuantity += itemQuantity;
         state.totalAmount += itemQuantity * item.price;
       }
-      localStorage.setItem("itemsInCart", JSON.stringify({items: state.items, totalItems: state.totalQuantity, totalValue: state.totalAmount}));
+      localStorage.setItem("itemsInCart", JSON.stringify({
+        items: state.items, 
+        totalItems: state.totalQuantity, 
+        totalValue: state.totalAmount,
+        cartId: cartItemId
+      }));
     },
     increaseItemQuantity: (state, action: PayloadAction<string>) => {
       const cartItemId = action.payload;
@@ -74,7 +91,13 @@ const cartSlice = createSlice({
         item.amount = item.quantity * item.price;
         state.totalQuantity += 1;
         state.totalAmount += item.price;
-        localStorage.setItem("itemsInCart", JSON.stringify({items: state.items, totalItems: state.totalQuantity, totalValue: state.totalAmount}));
+        state.cartId = state.items[0].cartId;
+        localStorage.setItem("itemsInCart", JSON.stringify({
+          items: state.items, 
+          totalItems: state.totalQuantity, 
+          totalValue: state.totalAmount,
+          cartId: cartItemId
+        }));
       } else {
         alert(
           "Please contact the customer service hotline for wholesale purchase!"
@@ -95,7 +118,14 @@ const cartSlice = createSlice({
         state.totalQuantity -= removedItem.quantity;
         state.totalAmount -= removedItem.amount;
       }
-      localStorage.setItem("itemsInCart", JSON.stringify({items: state.items, totalItems: state.totalQuantity, totalValue: state.totalAmount}));
+
+      state.cartId = cartItemId;
+      localStorage.setItem("itemsInCart", JSON.stringify({
+        items: state.items, 
+        totalItems: state.totalQuantity, 
+        totalValue: state.totalAmount,
+        cartId: cartItemId
+      }));
     },
     manageSideCartVisible: (state, action: PayloadAction<boolean>) => {
       state.isSideCartVisible = action.payload;

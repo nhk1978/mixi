@@ -3,9 +3,10 @@ import { useForm } from 'react-hook-form';
 import { AddressType } from '../../types/Address';
 import useAppSelector from '../../hooks/useAppSelector';
 import useAppDispatch from '../../hooks/useAppDispatch';
-import { updateConfirmOrder } from '../../redux/reducers/orderReducer';
+import { updateConfirmOrder, updatePaymentOrder } from '../../redux/reducers/orderReducer';
+import { OrderStatus } from '../../types/Order';
 
-const AddressForm = ({ cartId }: { cartId?: string }) => {
+const AddressForm = () => {
   const {
     register,
     handleSubmit,
@@ -13,19 +14,32 @@ const AddressForm = ({ cartId }: { cartId?: string }) => {
   } = useForm<AddressType>();
   const dispatch = useAppDispatch();
   const currentUser = useAppSelector((state) => state.users.currentUser);
+  const currentOrder = useAppSelector((state) => state.orders.currentOrder);
+  const currentStatus = useAppSelector((state) => state.orders.currentStatus);
+
 
   const onSubmit = (data: AddressType) => {
-    // console.log(data, cartId);
-    dispatch(
-      updateConfirmOrder({
-        update: {
-          recipient: data.recipient,
-          email: data.email,
-          phoneNumber: data.phone,
-          address: data.address,
-        },
-      })
-    );
+    if(currentStatus == OrderStatus.Pending)
+      dispatch(updateConfirmOrder({
+          id: currentOrder?.id,
+          update: {
+            recipient: data.recipient,
+            email: data.email,
+            phoneNumber: data.phone,
+            address: data.address,
+          },
+        })
+      );
+    else dispatch(updatePaymentOrder({
+      id: currentOrder?.id,
+      update: {
+        recipient: data.recipient,
+        email: data.email,
+        phoneNumber: data.phone,
+        address: data.address,
+      },
+    })
+  ); 
   };
 
   return (
@@ -38,6 +52,7 @@ const AddressForm = ({ cartId }: { cartId?: string }) => {
             currentUser && `${currentUser?.firstName} ${currentUser?.lastName}`
           }
           {...register('recipient', { required: true })}
+          readOnly = {currentStatus !== OrderStatus.Pending}
         />
         {errors.recipient && (
           <span className='form--error'>This field is required!</span>
@@ -49,6 +64,7 @@ const AddressForm = ({ cartId }: { cartId?: string }) => {
           placeholder='Enter your email'
           defaultValue={currentUser?.email}
           {...register('email', { required: true, pattern: /^\S+@\S+$/i })}
+          readOnly = {currentStatus !== OrderStatus.Pending}
         />
         {errors.email && (
           <span className='form--error'>
@@ -63,6 +79,7 @@ const AddressForm = ({ cartId }: { cartId?: string }) => {
           placeholder='Enter your phone'
           defaultValue={currentUser?.phoneNumber}
           {...register('phone', { required: true, maxLength: 15 })}
+          readOnly = {currentStatus !== OrderStatus.Pending}
         />
         {errors.phone && (
           <span className='form--error'>
@@ -71,12 +88,14 @@ const AddressForm = ({ cartId }: { cartId?: string }) => {
         )}
       </div>
       <div className='form__group'>
-        <input
+      <input
           type='text'
           placeholder='Enter your address'
           defaultValue={currentUser?.address}
-          {...register('address', { required: true })}
+          {...register('address', { required: true })} 
+          readOnly = {currentStatus !== OrderStatus.Pending}
         />
+        
         {errors.address && (
           <span className='form--error'>
             This field is required to put a shipping address!
@@ -84,9 +103,16 @@ const AddressForm = ({ cartId }: { cartId?: string }) => {
         )}
       </div>
 
-      <button type='submit' className='form__button'>
+      {currentStatus !== null && currentStatus === OrderStatus.Pending && <button type='submit' className='form__button'>
+        Confirm for your order
+      </button>}
+
+      {(currentStatus === OrderStatus.AwaitingPayment) && (<button type='submit' className='form__button'>
         Pay for your order
-      </button>
+      </button>)}
+      {(currentStatus === OrderStatus.AwaitingFulfillment) && (<span className='form__group'>
+            Thank you for your ordering. Please wait for fulfillment.
+          </span>)}
     </form>
   );
 };
