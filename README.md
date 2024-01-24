@@ -10,7 +10,7 @@ Shop Mixi is a straightforward ecommerce site, featuring essential frontend, bac
 ## Link to the demo demo demo
 
 ***Finished inhome fullstack can be explored here:***
-[https://shop-mixi-ecommerce.vercel.app](https://shop-mixi-ecommerce.vercel.app)
+[https://mixi-shop.vercel.app](https://mixi-shop.vercel.app)
 ***
 
 ## Table of content
