@@ -9,7 +9,11 @@
     "@testing-library/user-event": "^14.4.3",
     "@types/jest": "^27.5.2",
     "@types/node": "^17.0.45",
+<<<<<<< HEAD
     "@types/react": "^18.0.33",
+=======
+    "@types/react": "^18.2.48",
+>>>>>>> 16fe228 (re-strcuture)
     "@types/react-dom": "^18.0.11",
     "axios": "^1.4.0",
     "dotenv": "^16.3.1",
