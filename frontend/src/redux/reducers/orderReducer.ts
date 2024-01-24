@@ -1,5 +1,16 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios, { AxiosError } from "axios";
+<<<<<<< HEAD
+import { Order, OrderUpdate } from "../../types/Order";
+
+const baseUrl = `${process.env.REACT_APP_PROXY}/api/v1/orders`;
+
+const initialState: {
+  orders: Order[];
+  loading: boolean;
+  error: string;
+} = {
+=======
 import { Order, OrderStatus, OrderUpdate } from "../../types/Order";
 
 const baseUrl = `${process.env.REACT_APP_PROXY}/api/v1/orders`;
@@ -14,6 +25,7 @@ interface OrderReducer {
 }
 
 const initialState: OrderReducer= {
+>>>>>>> 16fe228 (re-strcuture)
   orders: [],
   loading: false,
   error: ""
@@ -47,10 +59,13 @@ export const createNewOrder = createAsyncThunk(
           Authorization: `Bearer ${token}`,
         }
       });
+<<<<<<< HEAD
+=======
       
       localStorage.setItem('orderId', createOrderResponse.data.id);
 
       console.log("createor orderId: " + createOrderResponse.data.id);
+>>>>>>> 16fe228 (re-strcuture)
       return createOrderResponse.data;
     } catch (e) {
       const error = e as AxiosError;
@@ -63,6 +78,11 @@ export const updateConfirmOrder = createAsyncThunk(
   "updateConfirmOrder",
   async (updatedOrder: OrderUpdate) => {
     try {
+<<<<<<< HEAD
+      const result = await axios.patch(
+        `${baseUrl}/${updatedOrder.id}/confirm`,
+        updatedOrder.update
+=======
       const token = localStorage.getItem('token');
       const result = await axios.patch(
         `${baseUrl}/${updatedOrder.id}/order-confirmation`,
@@ -88,6 +108,7 @@ export const updatePaymentOrder = createAsyncThunk(
         updatedOrder.update,{headers: {
           Authorization: `Bearer ${token}`,
         }}
+>>>>>>> 16fe228 (re-strcuture)
       );
       return result.data;
     } catch (e) {
@@ -139,8 +160,11 @@ const ordersSlice = createSlice({
           state.error = action.payload.message;
         } else {
           state.orders.push(action.payload);
+<<<<<<< HEAD
+=======
           state.currentOrder = action.payload;
           state.currentStatus = OrderStatus.Pending;
+>>>>>>> 16fe228 (re-strcuture)
         }
         state.loading = false;
       })
@@ -154,6 +178,15 @@ const ordersSlice = createSlice({
         if (action.payload instanceof AxiosError) {
           state.error = action.payload.message;
         } else {
+<<<<<<< HEAD
+          const products = state.orders.map((Order) => {
+            if (Order.id === action.payload.id) {
+              return { ...Order, ...action.payload };
+            }
+            return Order;
+          });
+          state.orders = products;
+=======
           // const orders = state.orders.map((Order) => {
           //   if (Order.id === action.payload.id) {
           //     return { ...Order, ...action.payload };
@@ -162,6 +195,7 @@ const ordersSlice = createSlice({
           // });
           // state.orders = orders;
           state.currentStatus = OrderStatus.AwaitingPayment;
+>>>>>>> 16fe228 (re-strcuture)
         }
         state.loading = false;
       })
@@ -169,6 +203,9 @@ const ordersSlice = createSlice({
         state.loading = true;
       })
       .addCase(updateConfirmOrder.rejected, (state) => {
+<<<<<<< HEAD
+        state.error = "Cannot update product";
+=======
         state.error = "Cannot update order";
       })
       .addCase(updatePaymentOrder.fulfilled, (state, action) => {
@@ -193,6 +230,7 @@ const ordersSlice = createSlice({
       })
       .addCase(updatePaymentOrder.rejected, (state) => {
         state.error = "Cannot update order";
+>>>>>>> 16fe228 (re-strcuture)
       })
       .addCase(deleteSingleOrder.fulfilled, (state, action) => {
         if (action.payload instanceof AxiosError) {
@@ -204,8 +242,11 @@ const ordersSlice = createSlice({
             (Order) => Order.id !== deletedOrderId
           );
         }
+<<<<<<< HEAD
+=======
 
         state.currentOrder = undefined;
+>>>>>>> 16fe228 (re-strcuture)
         state.loading = false;
       })
       .addCase(deleteSingleOrder.pending, (state) => {
