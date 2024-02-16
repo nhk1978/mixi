@@ -7,10 +7,10 @@ Shop Mixi is a straightforward ecommerce site, featuring essential frontend, bac
 ![Homepage](/Screenshot.png)
 
 ***
-## Link to the demo demo demo
+## Link to the demo
 
 ***Finished inhome fullstack can be explored here:***
-[https://mixi-shop.vercel.app](https://mixi-shop.vercel.app)
+[https://shop-mixi-ecommerce.vercel.app](https://shop-mixi-ecommerce.vercel.app)
 ***
 
 ## Table of content
@@ -56,7 +56,7 @@ Shop Mixi is a straightforward ecommerce site, featuring essential frontend, bac
 ![Backend](/erd.png)
 
 **- Diagram of HTTP methods**
-![Backend](/shopMixi-presenter.png)
+![Backend](/shopMixi-endpoints.png)
 
 ***
 <a name="getting-started"></a>
@@ -66,5 +66,5 @@ Shop Mixi is a straightforward ecommerce site, featuring essential frontend, bac
 Clone the repository from github:
 
 ```
-git clone https://github.com/Someonenguyenhere/shop-Mixi_ecommerce.git
+git clone https://github.com/nhk1978/mixi.git
 ```
