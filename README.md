@@ -56,7 +56,7 @@ Shop Mixi is a straightforward ecommerce site, featuring essential frontend, bac
 ![Backend](/erd.png)
 
 **- Diagram of HTTP methods**
-![Backend](/shopMixi-endpoints.png)
+![Backend](/shopmixi-endpoints.png)
 
 ***
 <a name="getting-started"></a>
